@@ -8,24 +8,34 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-type clientCache struct {
+type ClientPool struct {
+	sync.RWMutex
 	clients map[string]*fasthttp.HostClient
-	mu      sync.Mutex
 }
 
-func newClientCache() *clientCache {
-	return &clientCache{
+func NewClientPool() *ClientPool {
+	return &ClientPool{
 		clients: make(map[string]*fasthttp.HostClient),
 	}
 }
 
-func (cc *clientCache) getClient(ip string, cfg config.Config) *fasthttp.HostClient {
-	cc.mu.Lock()
-	defer cc.mu.Unlock()
-	key := ip + "|" + cfg.Protocol
-	if hc, ok := cc.clients[key]; ok {
-		return hc
+func (cp *ClientPool) getClient(ip string, cfg *config.Config) *fasthttp.HostClient {
+	cp.RLock()
+	client, exists := cp.clients[ip]
+	cp.RUnlock()
+
+	if exists {
+		return client
 	}
+
+	cp.Lock()
+	defer cp.Unlock()
+
+	// Double check after acquiring write lock
+	if client, exists = cp.clients[ip]; exists {
+		return client
+	}
+
 	var port string
 	var isTLS bool
 	if cfg.Protocol == "https" {
@@ -35,7 +45,8 @@ func (cc *clientCache) getClient(ip string, cfg config.Config) *fasthttp.HostCli
 		port = "80"
 		isTLS = false
 	}
-	hc := &fasthttp.HostClient{
+
+	client = &fasthttp.HostClient{
 		Addr:                          ip + ":" + port,
 		IsTLS:                         isTLS,
 		MaxConnDuration:               cfg.MaxConnDuration,
@@ -49,6 +60,7 @@ func (cc *clientCache) getClient(ip string, cfg config.Config) *fasthttp.HostCli
 			InsecureSkipVerify: true,
 		},
 	}
-	cc.clients[ip] = hc
-	return hc
+
+	cp.clients[ip] = client
+	return client
 }
