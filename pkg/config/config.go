@@ -23,6 +23,8 @@ type Config struct {
 	WriteTimeout        time.Duration
 	Protocol            string
 	Headers             map[string]string
+	IPFilter            []string
+	HostFilter          []string
 }
 
 func ParseFlags() Config {
@@ -37,6 +39,8 @@ func ParseFlags() Config {
 		readTimeout         int
 		writeTimeout        int
 		headersStr          string
+		ipFilterStr         string
+		hostFilterStr       string
 	)
 
 	flag.StringVar(&config.IPsFile, "ips", "", "File containing IP addresses")
@@ -52,7 +56,9 @@ func ParseFlags() Config {
 	flag.IntVar(&readTimeout, "read-timeout", 5, "Read timeout in seconds")
 	flag.IntVar(&writeTimeout, "write-timeout", 5, "Write timeout in seconds")
 	flag.BoolVar(&config.Verbose, "verbose", false, "Show all requests and responses")
-	flag.StringVar(&headersStr, "headers", "", "")
+	flag.StringVar(&headersStr, "headers", "", "Example: X-H1: Test;Header2: Value2")
+	flag.StringVar(&ipFilterStr, "ip-filter", "", "Comma-separated list of substrings that IP must contain")
+	flag.StringVar(&hostFilterStr, "host-filter", "", "Comma-separated list of substrings that hostname must contain")
 
 	flag.Parse()
 	if config.IPsFile == "" || config.HostsFile == "" {
@@ -92,5 +98,24 @@ func ParseFlags() Config {
 		}
 	}
 
+	if ipFilterStr != "" {
+		config.IPFilter = splitAndTrim(ipFilterStr)
+	}
+	if hostFilterStr != "" {
+		config.HostFilter = splitAndTrim(hostFilterStr)
+	}
+
 	return config
+}
+
+func splitAndTrim(s string) []string {
+	parts := strings.Split(s, ",")
+	var trimmed []string
+	for _, part := range parts {
+		t := strings.TrimSpace(part)
+		if t != "" {
+			trimmed = append(trimmed, t)
+		}
+	}
+	return trimmed
 }

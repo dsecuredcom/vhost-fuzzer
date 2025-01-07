@@ -32,7 +32,15 @@ func NewScanner(cfg config.Config, bar *progressbar.ProgressBar) *Scanner {
 }
 
 func (s *Scanner) Run() {
-	processor, err := NewBatchProcessor(s.config.IPsFile, s.config.HostsFile, s.config.Paths, s.targetChan)
+	processor, err := NewBatchProcessor(
+		s.config.IPsFile,
+		s.config.HostsFile,
+		s.config.Paths,
+		s.targetChan,
+		s.config.IPFilter,
+		s.config.HostFilter,
+	)
+
 	if err != nil {
 		fmt.Printf("Error initializing batch processor: %v\n", err)
 		return

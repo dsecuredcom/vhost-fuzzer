@@ -18,12 +18,22 @@ func main() {
 	}
 	fmt.Println("[*] Counting targets...")
 	startTime := time.Now()
-	totalTargets, err := scanner.CountTotalTargets(cfg.IPsFile, cfg.HostsFile, len(cfg.Paths))
+	totalTargets, filteredTargets, err := scanner.CountTotalTargetsWithFilter(
+		cfg.IPsFile,
+		cfg.HostsFile,
+		cfg.IPFilter,
+		cfg.HostFilter,
+		len(cfg.Paths),
+	)
 	if err != nil {
 		fmt.Printf("[-] Error counting targets: %v\n", err)
 		os.Exit(1)
 	}
-	fmt.Printf("[+] Found %d total targets (took %s)\n", totalTargets, time.Since(startTime))
+
+	// Beispiel-Ausgabe:
+	fmt.Printf("[+] Found %d total targets (unfiltered), %d remain after filtering\n", totalTargets, filteredTargets)
+	fmt.Printf("[*] Counting took %s\n", time.Since(startTime))
+
 	bar := progressbar.NewOptions(
 		int(totalTargets),
 		progressbar.OptionEnableColorCodes(true),

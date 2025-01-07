@@ -57,21 +57,24 @@ test.example.com
 
 ## Flags
 
-| Flag | Default | Description |
-|------|---------|-------------|
-| `-ips` | | File containing IP addresses (required) |
-| `-hosts` | | File containing hostnames (required) |
-| `-concurrency` | 100 | Number of concurrent workers |
-| `-paths` | "/" | Comma-separated list of paths to check |
-| `-protocol` | "http" | Protocol to use (http/https) |
-| `-http-body-includes` | | String to search for in response body |
-| `-http-status-is` | 0 | Expected HTTP status code |
-| `-request-timeout` | 4 | Timeout for individual requests in seconds |
-| `-max-idle-timeout` | 6 | Maximum idle connection duration in seconds |
-| `-max-conn-timeout` | 6 | Maximum connection duration in seconds |
-| `-read-timeout` | 5 | Read timeout in seconds |
-| `-write-timeout` | 5 | Write timeout in seconds |
-| `-verbose` | false | Show all requests and responses |
+| Flag                  | Default | Description                                     |
+|-----------------------|---|-------------------------------------------------|
+| `-ips`                | | File containing IP addresses (required)         |
+| `-hosts`              | | File containing hostnames (required)            |
+| `-concurrency`        | 100 | Number of concurrent workers                    |
+| `-paths`              | "/" | Comma-separated list of paths to check          |
+| `-protocol`           | "http" | Protocol to use (http/https)                    |
+| `-http-body-includes` | | String to search for in response body           |
+| `-http-status-is`     | 0 | Expected HTTP status code                       |
+| `-request-timeout`    | 4 | Timeout for individual requests in seconds      |
+| `-max-idle-timeout`   | 6 | Maximum idle connection duration in seconds     |
+| `-max-conn-timeout`   | 6 | Maximum connection duration in seconds          |
+| `-read-timeout`       | 5 | Read timeout in seconds                         |
+| `-write-timeout`      | 5 | Write timeout in seconds                        |
+| `-headers`            | | Additional HTTP headers (Format: "X1:v1; X2:v2) |
+| `-host-filter`        | | Use only hosts with those strings (CSV)         |
+| `-ip-filter`          | | Use only ips with those strings (CSV)           |
+| `-verbose`            | false | Show all requests and responses                 |
 
 ## Examples
 
