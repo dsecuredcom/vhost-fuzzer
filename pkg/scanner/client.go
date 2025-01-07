@@ -22,12 +22,10 @@ func newClientCache() *clientCache {
 func (cc *clientCache) getClient(ip string, cfg config.Config) *fasthttp.HostClient {
 	cc.mu.Lock()
 	defer cc.mu.Unlock()
-
 	key := ip + "|" + cfg.Protocol
 	if hc, ok := cc.clients[key]; ok {
 		return hc
 	}
-
 	var port string
 	var isTLS bool
 	if cfg.Protocol == "https" {
@@ -37,7 +35,6 @@ func (cc *clientCache) getClient(ip string, cfg config.Config) *fasthttp.HostCli
 		port = "80"
 		isTLS = false
 	}
-
 	hc := &fasthttp.HostClient{
 		Addr:                          ip + ":" + port,
 		IsTLS:                         isTLS,
@@ -52,7 +49,6 @@ func (cc *clientCache) getClient(ip string, cfg config.Config) *fasthttp.HostCli
 			InsecureSkipVerify: true,
 		},
 	}
-
 	cc.clients[ip] = hc
 	return hc
 }

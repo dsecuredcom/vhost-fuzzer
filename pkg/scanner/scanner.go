@@ -32,30 +32,21 @@ func NewScanner(cfg config.Config, bar *progressbar.ProgressBar) *Scanner {
 }
 
 func (s *Scanner) Run() {
-	processor, err := NewBatchProcessor(
-		s.config.IPsFile,
-		s.config.HostsFile,
-		s.config.Paths,
-		s.targetChan,
-	)
+	processor, err := NewBatchProcessor(s.config.IPsFile, s.config.HostsFile, s.config.Paths, s.targetChan)
 	if err != nil {
 		fmt.Printf("Error initializing batch processor: %v\n", err)
 		return
 	}
 	defer processor.Close()
-
 	go func() {
 		if err := processor.ProcessFilesChunked(); err != nil {
 			fmt.Printf("Error processing files: %v\n", err)
 		}
 	}()
-
 	pool := NewWorkerPool(s.config.Concurrency, s)
 	pool.Start()
-
 	done := make(chan struct{})
 	go s.processResults(done)
-
 	pool.Wait()
 	close(s.resultChan)
 	<-done
@@ -64,7 +55,6 @@ func (s *Scanner) Run() {
 func (s *Scanner) updateProgress() {
 	s.progressMutex.Lock()
 	s.progressCount++
-
 	if s.progressCount%progressBatch == 0 || time.Since(s.lastUpdateTime) > time.Second {
 		s.bar.Set(int(s.progressCount))
 		s.lastUpdateTime = time.Now()
