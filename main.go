@@ -7,7 +7,6 @@ import (
 	"runtime"
 	"strings"
 	"sync"
-	"syscall"
 	"time"
 
 	"github.com/schollz/progressbar/v3"
@@ -86,12 +85,11 @@ func main() {
 
 	// Load targets
 	ips := utils.LoadIpLines(*ipsFile)
-	for _, ipRange := range ips {
-		fmt.Printf("IP range: %s\n", ipRange)
-	}
-	syscall.Exit(1)
+	fmt.Println("Loaded", len(ips), "IP addresses")
 	hosts := utils.LoadHostLines(*hostsFile)
+	fmt.Println("Loaded", len(hosts), "hostnames")
 	pathList := strings.Split(*paths, ",")
+	fmt.Println("Loaded", len(pathList), "paths")
 
 	// Generate targets
 	targetChan, totalTargets := s.CreateTargetChannel(ips, hosts, pathList)
